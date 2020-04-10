@@ -1,3 +1,0 @@
-Q1) This code smell is duplicated code. The exact same code is used twice,
-which allows us to use the extract method refactor tool to make our code
-better.
