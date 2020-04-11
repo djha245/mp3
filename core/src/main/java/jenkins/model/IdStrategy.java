@@ -231,7 +231,7 @@ public abstract class IdStrategy extends AbstractDescribableImpl<IdStrategy> imp
             } else {
                 StringBuilder buf = new StringBuilder(filename.length());
                 final char[] chars = filename.toCharArray();
-                for (int i = 0; i < chars.length; i++) {
+                outer: for (int i = 0; i < chars.length; i++) {
                     char c = chars[i];
                     if ('a' <= c && c <= 'z') {
                         buf.append(c);
@@ -246,29 +246,13 @@ public abstract class IdStrategy extends AbstractDescribableImpl<IdStrategy> imp
                         }
                     } else if (c == '$') {
                         StringBuilder hex = new StringBuilder(4);
-                        i++;
-                        if (i < chars.length) {
-                            hex.append(chars[i]);
-                        } else {
-                            break;
-                        }
-                        i++;
-                        if (i < chars.length) {
-                            hex.append(chars[i]);
-                        } else {
-                            break;
-                        }
-                        i++;
-                        if (i < chars.length) {
-                            hex.append(chars[i]);
-                        } else {
-                            break;
-                        }
-                        i++;
-                        if (i < chars.length) {
-                            hex.append(chars[i]);
-                        } else {
-                            break;
+                        for (int n = 0; n < 4; n++) {
+                            i++;
+                            if (i < chars.length) {
+                                hex.append(chars[i]);
+                            } else {
+                                break outer;
+                            }
                         }
                         buf.append(Character.valueOf((char)Integer.parseInt(hex.toString(), 16)));
                     }

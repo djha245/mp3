@@ -42,14 +42,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.security.AlgorithmParameterGenerator;
-import java.security.GeneralSecurityException;
-import java.security.Key;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PublicKey;
-import java.security.Signature;
+import java.security.*;
 import java.security.interfaces.DSAPublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
@@ -152,19 +145,17 @@ public class Connection {
         if (side) {
             AlgorithmParameterGenerator paramGen = AlgorithmParameterGenerator.getInstance("DH");
             paramGen.init(keySize);
-
-            KeyPairGenerator dh = KeyPairGenerator.getInstance("DH");
-            dh.initialize(paramGen.generateParameters().getParameterSpec(DHParameterSpec.class));
-            keyPair = dh.generateKeyPair();
+            DHParameterSpec SP = paramGen.generateParameters().getParameterSpec(DHParameterSpec.class);
+            keyPair = generateKeyPairWithSec(SP);
 
             // send a half and get a half
             writeKey(keyPair.getPublic());
             otherHalf = KeyFactory.getInstance("DH").generatePublic(readKey());
         } else {
             otherHalf = KeyFactory.getInstance("DH").generatePublic(readKey());
-
             KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("DH");
-            keyPairGen.initialize(((DHPublicKey) otherHalf).getParams());
+            DHParameterSpec SP = ((DHPublicKey) otherHalf).getParams();
+            keyPairGen.initialize(SP);
             keyPair = keyPairGen.generateKeyPair();
 
             // send a half and get a half
@@ -176,6 +167,14 @@ public class Connection {
         ka.doPhase(otherHalf, true);
 
         return ka;
+    }
+
+    public KeyPair generateKeyPairWithSec(DHParameterSpec SP) throws NoSuchAlgorithmException, InvalidAlgorithmParameterException, java.security.spec.InvalidParameterSpecException {
+        KeyPair newKey;
+        KeyPairGenerator dh = KeyPairGenerator.getInstance("DH");
+        dh.initialize(SP);
+        newKey = dh.generateKeyPair();
+        return newKey;
     }
 
     /**
