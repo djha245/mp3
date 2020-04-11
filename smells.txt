@@ -1,0 +1,12 @@
+Q1) This code smell is duplicated code. The exact same code is used twice,
+which allows us to use the extract method refactor tool to make our code
+better.
+Q2) This code smell is also duplicated code. This code is used four times,
+allowing us to make an extract method refactor and make our code much better
+with a new function and function calls.
+Q3) This code smell is a feature envy. We can get rid of the class call by
+simply moving the method into the jenkins class. This is where the method
+should've been.
+Q4) This was easily elimated by a simple loop that went through 4 times (the 
+number of times the code originally repeated). Also, the outer loop was labelled 
+so that the break broke to the correct part in the code.
